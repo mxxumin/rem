@@ -1,0 +1,41 @@
+#利用js动态为<html>标签添加font-size时，浏览器默认字体的变化对页面实际显示的影响
+***
+<pre><code>
+var screenWidth = window.innerWidth, // 移动端屏幕的宽度 
+    designWidth = 750, // 设计稿的宽度以px为单位,对于设计稿一般选取1rem = 100px
+    designWidthRem = designWidth/100, // 设计稿的宽度以rem为单位
+    html = document.getElementsByTagName("html")[0]; // 获取根元素<html>
+document.documentElement.style.fontSize = screenWidth/designWidthRem/16\*100 +"%";
+</code></pre>
+***
+这种利用js动态为<html>标签添加font-size的方法在默认字体是16px的浏览器中，无论屏幕尺寸大小如何变化，都能按照设计图等比例的显示。但是当浏览器的默认字体发生变化时，同一元素在同一屏幕下显示的大小就会发生变化，出现偏差。
+<figure>
+    <img src="img/1.png">
+    <img src="img/2.png">
+</figure> 
+以宽度为750px的设计稿为例，对于设计稿，一般取1rem = 100px。在该设计图中有一个宽高均为100px(1rem)的div。按照上面js动态为<html>标签添加font-size的方法，该div在屏幕宽度为375px的设备上显示的宽高均为50px，此时，我们修改浏览器默认字体大小为18px，该div在屏幕宽度为375px的设备上显示的宽高变为56.25px。这与之前显示的出现了偏差。出现这种偏差的主要问题在于：
+<pre><code>document.documentElement.style.fontSize = screenWidth/designWidthRem/16*100</code></pre>
+这段动态计算<html>标签的font-size默认的是浏览器字体是16px。为了防止浏览器默认字体发生变化时，同一个元素在同一屏幕下出现的尺寸大小不同，对上述代码进行修改如下：
+<pre><code>
+var screenWidth = window.innerWidth, // 移动端屏幕的宽度 
+    designWidth = 750, // 设计稿的宽度以px为单位,对于设计稿一般选取1rem = 100px
+    designWidthRem = designWidth/100, // 设计稿的宽度以rem为单位
+    html = document.getElementsByTagName("html")[0], // 获取根元素<html>
+    defaultFontSize = parseFloat(getStyle(html)["font-size"]); //获取浏览器的默认字体
+function getStyle(element){
+    if(getComputedStyle){
+        return getComputedStyle(element); 
+    }else{
+        return element.currentStyle; //兼容IE9以下的浏览器
+    }
+}
+document.documentElement.style.fontSize = screenWidth/designWidthRem/defaultFontSize\*100 +"%"; 
+</code></pre>
+其中defaultFontSize的引入很好的解决了这种同一元素在同一屏幕下显示的尺寸不同的问题。
+<figure>
+    <img src="img/3.png">
+    <img src="img/4.png">
+</figure> 
+
+
+                                                 ——2017/08/28
