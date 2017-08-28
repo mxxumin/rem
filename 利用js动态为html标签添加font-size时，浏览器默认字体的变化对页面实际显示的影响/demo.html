@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0 maximum-scale=1.0" />
+	<title>利用js动态为<html>标签添加font-size时，浏览器默认字体的变化对页面实际显示的影响</title>
+	<style type="text/css">
+	    /*用一个宽高均为1rem的div来显示浏览器默认字体不同对移动端页面产生的影响*/
+	    *{
+	    	padding:0;
+	    	margin:0;
+	    }
+	    body{
+	    	background:#525252;
+	    }
+	    /*div的样式*/
+		div{
+			width:1rem;
+			height:1rem;
+			font-size:.3rem;
+			text-align:center;
+			line-height:1rem;
+			color:#fff;
+			background:#e53434;
+		}
+	</style>
+</head>
+<body>
+	<div>1rem</div>
+	<script type="text/javascript">
+	    // 利用js动态为<html>标签添加font-size的方法
+
+		var screenWidth = window.innerWidth, // 移动端屏幕的宽度 
+	        designWidth = 750, // 设计稿的宽度以px为单位,对于设计稿一般选取1rem = 100px
+	        designWidthRem = designWidth/100, // 设计稿的宽度以rem为单位
+	        html = document.getElementsByTagName("html")[0], // 获取根元素<html>
+	        defaultFontSize = parseFloat(getStyle(html)["font-size"]); //获取浏览器的默认字体
+	    function getStyle(element){
+	    	if(getComputedStyle){
+	    		return getComputedStyle(element); 
+	    	}else{
+	    		return element.currentStyle; //兼容IE9以下的浏览器
+	    	}
+	    }
+	    document.documentElement.style.fontSize = screenWidth/designWidthRem/defaultFontSize*100 +"%";
+		
+	</script>
+</body>
+</html>
